@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "canvaep-dev",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-l", "-c", "cd /Users/andy.l/canvaep/canvaep && npm run dev -- --port 3001"],
+      "port": 3001
+    }
+  ]
+}

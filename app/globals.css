@@ -1,26 +1,178 @@
 @import "tailwindcss";
 
+/* ── Canva fonts ─────────────────────────────────────────── */
+@font-face {
+  font-family: "Canva Sans";
+  src: url("/fonts/CanvaSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Canva Sans";
+  src: url("/fonts/CanvaSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Canva Sans";
+  src: url("/fonts/CanvaSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Canva Sans Display";
+  src: url("/fonts/CanvaSansDisplay-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Canva Sans Display";
+  src: url("/fonts/CanvaSansDisplay-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Base ────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gradient: linear-gradient(135deg, #00c4cc, #5a32fa, #7d2ae8);
+  --gradient-h: linear-gradient(90deg, #00c4cc, #5a32fa, #7d2ae8);
+  --bg: linear-gradient(160deg, #0a0a14 0%, #12082a 30%, #1a0e3a 50%, #0d1a2e 70%, #0a0a14 100%);
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-tertiary: rgba(255, 255, 255, 0.32);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Canva Sans", system-ui, sans-serif;
+  background: var(--bg);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
+
+/* ── Gradient text utility ───────────────────────────────── */
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-h {
+  background: var(--gradient-h);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Gradient bar (2px top border on cards/header) ───────── */
+.gradient-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-h);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ── Glass surfaces ─────────────────────────────────────── */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+}
+
+/* ── Scrollable content areas ───────────────────────────── */
+.scroll-area {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Focus ──────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #5a32fa;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Input base ─────────────────────────────────────────── */
+input,
+textarea,
+select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: "Canva Sans", system-ui, sans-serif;
+  border-radius: 12px;
+  transition: border-color 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #5a32fa;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* ── Status colours ─────────────────────────────────────── */
+.status-draft        { color: rgba(255, 255, 255, 0.45); }
+.status-in-progress  { color: #4D8EF7; }
+.status-needs-info   { color: #FF7A2F; }
+.status-complete     { color: #00B870; }
