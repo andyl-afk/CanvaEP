@@ -37,10 +37,24 @@ export default function NewBriefPage() {
       .insert({ ...form, status })
       .select()
       .single();
-    setSaving(false);
+
     if (!error && data) {
+      if (status === "needs-interrogation") {
+        // Call the interrogation API before navigating
+        // Errors are swallowed — the detail page auto-triggers as a fallback
+        try {
+          await fetch("/api/interrogate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ briefId: data.id }),
+          });
+        } catch {
+          // Non-fatal
+        }
+      }
       router.push(`/briefs/${data.id}`);
     }
+    setSaving(false);
   }
 
   const inputStyle: React.CSSProperties = {

@@ -40,6 +40,8 @@ export default function BriefDetailPage() {
   const [brief, setBrief] = useState<Brief | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [interrogating, setInterrogating] = useState(false);
+  const [interrogationError, setInterrogationError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -58,10 +60,73 @@ export default function BriefDetailPage() {
     load();
   }, [id]);
 
+  async function runInterrogation(briefId: string) {
+    setInterrogating(true);
+    setInterrogationError(null);
+    try {
+      const res = await fetch("/api/interrogate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ briefId }),
+      });
+      const json = await res.json();
+      if (res.ok) {
+        setBrief(json.brief as Brief);
+      } else {
+        setInterrogationError(json.error ?? "Interrogation failed");
+      }
+    } catch (err) {
+      setInterrogationError(err instanceof Error ? err.message : "Network error");
+    } finally {
+      setInterrogating(false);
+    }
+  }
+
+  // Auto-trigger interrogation if brief still needs it
+  useEffect(() => {
+    if (!brief || brief.status !== "needs-interrogation") return;
+    async function interrogate() {
+      setInterrogating(true);
+      setInterrogationError(null);
+      try {
+        const res = await fetch("/api/interrogate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ briefId: brief!.id }),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          setBrief(json.brief as Brief);
+        } else {
+          setInterrogationError(json.error ?? "Interrogation failed");
+        }
+      } catch (err) {
+        setInterrogationError(err instanceof Error ? err.message : "Network error");
+      } finally {
+        setInterrogating(false);
+      }
+    }
+    interrogate();
+  }, [brief?.status, brief?.id]);
+
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
         <Loader2 size={24} className="animate-spin" style={{ color: "rgba(255,255,255,0.3)" }} />
+      </div>
+    );
+  }
+
+  if (interrogating) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-3">
+        <Loader2 size={24} className="animate-spin" style={{ color: "rgba(150,130,255,0.7)" }} />
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "14px" }}>
+          Interrogating brief…
+        </p>
+        <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "12px" }}>
+          Claude is extracting key info and identifying gaps
+        </p>
       </div>
     );
   }
@@ -82,6 +147,34 @@ export default function BriefDetailPage() {
 
   return (
     <div className="h-full flex flex-col p-5 md:p-8 gap-6 overflow-auto">
+      {/* Interrogation error banner */}
+      {interrogationError && (
+        <div
+          className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl flex-shrink-0"
+          style={{
+            background: "rgba(240,82,82,0.1)",
+            border: "1px solid rgba(240,82,82,0.25)",
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <AlertCircle size={14} style={{ color: "#F05252", flexShrink: 0 }} />
+            <span className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+              {interrogationError}
+            </span>
+          </div>
+          <button
+            onClick={() => runInterrogation(brief.id)}
+            className="text-xs px-3 py-1.5 rounded-lg flex-shrink-0"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-start gap-3 flex-shrink-0">
         <Link
@@ -186,7 +279,11 @@ export default function BriefDetailPage() {
                     className="col-span-2"
                     style={{ color: "rgba(255,255,255,0.8)" }}
                   >
-                    {String(value)}
+                    {Array.isArray(value)
+                      ? value.join(", ") || "—"
+                      : value == null || value === ""
+                      ? "—"
+                      : String(value)}
                   </span>
                 </div>
               ))}
