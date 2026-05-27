@@ -12,6 +12,7 @@ import {
   Loader2,
   Trash2,
   ChevronDown,
+  RefreshCw,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────
@@ -500,8 +501,30 @@ export default function CrewPage() {
   const [loading, setLoading] = useState(true);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => { loadMembers(); }, []);
+
+  async function syncFromSheet() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await fetch("/api/sync-crew", { method: "POST" });
+      const json = await res.json();
+      if (res.ok) {
+        setSyncMsg({ type: "success", text: `Synced ${json.synced} crew members from spreadsheet` });
+        await loadMembers();
+      } else {
+        setSyncMsg({ type: "error", text: json.error ?? "Sync failed" });
+      }
+    } catch {
+      setSyncMsg({ type: "error", text: "Network error — could not reach sync API" });
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 5000);
+    }
+  }
 
   async function loadMembers() {
     const { data } = await supabase
@@ -576,10 +599,44 @@ export default function CrewPage() {
           >
             Crew
           </h2>
-          <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-            {internal.length} internal · {external.length} external
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+              {internal.length} internal · {external.length} external
+            </span>
+            <button
+              onClick={syncFromSheet}
+              disabled={syncing}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity"
+              style={{
+                background: "rgba(90,50,250,0.2)",
+                border: "1px solid rgba(90,50,250,0.35)",
+                color: syncing ? "rgba(150,130,255,0.5)" : "rgba(150,130,255,0.9)",
+              }}
+            >
+              {syncing
+                ? <Loader2 size={12} className="animate-spin" />
+                : <RefreshCw size={12} />
+              }
+              {syncing ? "Syncing…" : "Sync from sheet"}
+            </button>
+          </div>
         </div>
+
+        {/* Sync status message */}
+        {syncMsg && (
+          <div
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm"
+            style={{
+              background: syncMsg.type === "success"
+                ? "rgba(0,184,112,0.1)"
+                : "rgba(240,82,82,0.1)",
+              border: `1px solid ${syncMsg.type === "success" ? "rgba(0,184,112,0.25)" : "rgba(240,82,82,0.25)"}`,
+              color: syncMsg.type === "success" ? "#00B870" : "#F05252",
+            }}
+          >
+            {syncMsg.text}
+          </div>
+        )}
 
         {/* Internal sections by craft */}
         {byCraft.map(({ craft, members: craftMembers }) => (

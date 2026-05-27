@@ -1,55 +1,34 @@
 -- CanvaEP — Seed data
--- Run after migrations. Truncate first: truncate team_members restart identity cascade;
+-- Run after migrations. Truncate first if re-seeding internal crew only.
 
 -- ── Production Studio · Video & Photo ─────────────────────
 insert into team_members (name, role, location, type, craft, skills, availability_status) values
-('Andy Lloyd',    'Sr. Videographer',    'Sydney', 'internal', 'Video & Photo', '["directing", "cinematography", "Sony FX6", "DJI Ronin"]', 'busy'),
-('Jess Edwards',  'Sr. Videographer',    'Sydney', 'internal', 'Video & Photo', '["cinematography", "run-and-gun", "documentary", "social content"]', 'available'),
-('Jess Holmes',   'Videographer / Editor','Sydney', 'internal', 'Video & Photo', '["cinematography", "Premiere Pro", "DaVinci Resolve"]', 'available'),
-('Reuben Skinner','Sr. Videographer',    'Sydney', 'internal', 'Video & Photo', '[]', 'available'),
-('Tammie Joske',  'Sr. Photographer',    'Sydney', 'internal', 'Video & Photo', '[]', 'available');
+('André Rodrigues', 'Video / AD',       'Sydney', 'internal', 'Video & Photo', '[]', 'available'),
+('Christian Love',  'Sr. Videographer', 'Sydney', 'internal', 'Video & Photo', '[]', 'available'),
+('Paige Cooper',    'Content Creator',  'Sydney', 'internal', 'Video & Photo', '[]', 'available'),
+('Chloe Adams',     'Content Creator',  'Sydney', 'internal', 'Video & Photo', '[]', 'available');
 
 -- ── Production Studio · Motion ────────────────────────────
 insert into team_members (name, role, location, type, craft, skills, availability_status) values
-('Phillip Tibballs',    'Motion Lead',          'Sydney', 'internal', 'Motion', '["After Effects", "Cinema 4D", "motion graphics"]', 'available'),
-('Daniel King',         'Sr. Motion Designer',  'Sydney', 'internal', 'Motion', '["After Effects", "Cinema 4D", "3D animation"]', 'available'),
-('Mika David',          'Sr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Minjoo Shin',         'Sr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Sai Lo',              'Sr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Sean Pointing',       'Motion Designer',      'Sydney', 'internal', 'Motion', '["After Effects", "Cinema 4D"]', 'available'),
-('Em Barriga',          'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Jenny Gernale',       'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Kat Agapito',         'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Kristen Uy',          'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Martin Jarmin',       'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Paolo Bautista',      'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Ran Busadre',         'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Vivi Feng',           'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Joshua Noguera',      'Motion Designer',      'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Francis Riano',       'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Gelo Basul',          'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Jordi White',         'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Lyra Bertulfo',       'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Marj Zamora',         'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Sean Valencia',       'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available'),
-('Vermeer Crisostomo',  'Jr. Motion Designer',  'Sydney', 'internal', 'Motion', '[]', 'available');
+('Dan King',      'Principal Motion Designer', 'Sydney',    'internal', 'Motion', '[]', 'available'),
+('Steph Lee',     'Motion Designer',           'Sydney',    'internal', 'Motion', '[]', 'available'),
+('Sean Pointing', 'Sr. Motion Designer',       'Sydney',    'internal', 'Motion', '[]', 'available'),
+('Lyra Bertulfo', 'Jr. Motion Designer',       'Sydney',    'internal', 'Motion', '[]', 'available'),
+('Sai Lo',        'Sr. Motion Designer',        'Manila',   'internal', 'Motion', '[]', 'available'),
+('Sean Valencia', 'Motion Designer',            'Manila',   'internal', 'Motion', '[]', 'available'),
+('Em Barriga',    'Sr. Motion Designer',        'Manila',   'internal', 'Motion', '[]', 'available'),
+('Francis Riano', 'Motion Designer',            'Manila',   'internal', 'Motion', '[]', 'available'),
+('Kristen Uy',    'Motion Designer',            'Manila',   'internal', 'Motion', '[]', 'available');
 
 -- ── Production Studio · Producers & Ops ──────────────────
 insert into team_members (name, role, location, type, craft, skills, availability_status) values
-('Larry Foster',    'Sr. Producer',             'Sydney', 'internal', 'Producers & Ops', '["production management", "budgeting", "scheduling"]', 'busy'),
-('Cheska Rey',      'Sr. Producer',             'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Enrie Matutinao', 'Sr. Producer',             'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Katrina Wise',    'Sr. Producer',             'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Georgia Creer',   'Creative Producer',        'Sydney', 'internal', 'Producers & Ops', '["production management", "scheduling", "client liaison"]', 'available'),
-('Jameson Fahy',    'Producer',                 'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Elle Buentipo',   'Jr. Producer',             'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Keng Lopez',      'Production Lead',          'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Matt Hodges',     'Post Production Manager',  'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Love Toribio',    'Sr. Content Administrator','Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Inna Espiritu',   'Content Administrator',    'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Kimi Cosepe',     'Content Administrator',    'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Perse Escobar',   'Content Administrator',    'Sydney', 'internal', 'Producers & Ops', '[]', 'available'),
-('Lex Nocheseda',   'Jr. Content Administrator','Sydney', 'internal', 'Producers & Ops', '[]', 'available');
+('Georgia Creer',   'Sr. Producer',        'Sydney',    'internal', 'Producers & Ops', '["production management", "scheduling", "client liaison"]', 'available'),
+('Lily McGann',     'Producer',            'Sydney',    'internal', 'Producers & Ops', '[]', 'available'),
+('Alissa Prcevich', 'Sr. Program Manager', 'Sydney',    'internal', 'Producers & Ops', '[]', 'available'),
+('Adamo Gargano',   'Program Manager',     'Melbourne', 'internal', 'Producers & Ops', '[]', 'available'),
+('Nicole Chua',     'Program Manager',     'Manila',    'internal', 'Producers & Ops', '[]', 'available'),
+('Elle Buentipo',   'Producer',            'Manila',    'internal', 'Producers & Ops', '[]', 'available'),
+('Ellaine Llave',   'Sr. Program Manager', 'Manila',    'internal', 'Producers & Ops', '[]', 'available');
 
 -- ── External freelancer pool ──────────────────────────────
 insert into team_members (name, role, location, type, craft, skills, availability_status, day_rate, company, notes) values
