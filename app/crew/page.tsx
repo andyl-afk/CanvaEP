@@ -496,6 +496,9 @@ function EditModal({
 
 // ── Main page ─────────────────────────────────────────────
 
+const SYNC_CACHE_KEY = "crew_last_synced";
+const SYNC_THROTTLE_MS = 5 * 60 * 1000; // 5 minutes
+
 export default function CrewPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -503,26 +506,45 @@ export default function CrewPage() {
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [lastSynced, setLastSynced] = useState<number | null>(null);
 
-  useEffect(() => { loadMembers(); }, []);
+  useEffect(() => {
+    // Load existing data immediately, then auto-sync if stale
+    loadMembers().then(() => {
+      const stored = parseInt(localStorage.getItem(SYNC_CACHE_KEY) ?? "0");
+      setLastSynced(stored || null);
+      if (Date.now() - stored > SYNC_THROTTLE_MS) {
+        syncFromSheet(true).then(() => {
+          const now = Date.now();
+          localStorage.setItem(SYNC_CACHE_KEY, String(now));
+          setLastSynced(now);
+        });
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  async function syncFromSheet() {
-    setSyncing(true);
-    setSyncMsg(null);
+  async function syncFromSheet(silent = false) {
+    if (!silent) { setSyncing(true); setSyncMsg(null); }
     try {
       const res = await fetch("/api/sync-crew", { method: "POST" });
       const json = await res.json();
       if (res.ok) {
-        setSyncMsg({ type: "success", text: `Synced ${json.synced} crew members from spreadsheet` });
+        if (!silent) setSyncMsg({ type: "success", text: `Synced ${json.synced} crew members from spreadsheet` });
         await loadMembers();
       } else {
-        setSyncMsg({ type: "error", text: json.error ?? "Sync failed" });
+        if (!silent) setSyncMsg({ type: "error", text: json.error ?? "Sync failed" });
       }
     } catch {
-      setSyncMsg({ type: "error", text: "Network error — could not reach sync API" });
+      if (!silent) setSyncMsg({ type: "error", text: "Network error — could not reach sync API" });
     } finally {
-      setSyncing(false);
-      setTimeout(() => setSyncMsg(null), 5000);
+      if (!silent) {
+        setSyncing(false);
+        const now = Date.now();
+        localStorage.setItem(SYNC_CACHE_KEY, String(now));
+        setLastSynced(now);
+        setTimeout(() => setSyncMsg(null), 5000);
+      }
     }
   }
 
@@ -603,8 +625,13 @@ export default function CrewPage() {
             <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
               {internal.length} internal · {external.length} external
             </span>
+            {lastSynced && !syncing && (
+              <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                synced {Math.round((Date.now() - lastSynced) / 60000)}m ago
+              </span>
+            )}
             <button
-              onClick={syncFromSheet}
+              onClick={() => syncFromSheet(false)}
               disabled={syncing}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-opacity"
               style={{
